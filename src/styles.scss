@@ -4,7 +4,7 @@ html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .align-right {
-	text-align: right;
+	text-align: right !important;
 }
 
 .align-left {
@@ -34,8 +34,21 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .app-logo {
 	font-family: 'Baloo Bhaina 2', cursive !important;
 	font-weight: 600;
+	margin: 0;
 }
 
 mat-spinner {
 	margin: .7em auto;
+
+	&.no-margin {
+		margin: 0;
+	}
+}
+
+mat-card {
+	box-sizing: border-box;
+}
+
+.flex-fill {
+	flex: 1 1 auto;
 }

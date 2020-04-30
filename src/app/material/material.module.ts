@@ -6,6 +6,11 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatTableModule} from '@angular/material/table';
+import {MatIconModule} from '@angular/material/icon';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 
 @NgModule({
@@ -17,7 +22,12 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 		MatFormFieldModule,
 		MatInputModule,
 		MatCheckboxModule,
-		MatProgressSpinnerModule
+		MatProgressSpinnerModule,
+		MatSnackBarModule,
+		MatToolbarModule,
+		MatTableModule,
+		MatIconModule,
+		MatSlideToggleModule
 	],
 	exports: [
 		MatCardModule,
@@ -25,7 +35,12 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 		MatFormFieldModule,
 		MatInputModule,
 		MatCheckboxModule,
-		MatProgressSpinnerModule
+		MatProgressSpinnerModule,
+		MatSnackBarModule,
+		MatToolbarModule,
+		MatTableModule,
+		MatIconModule,
+		MatSlideToggleModule
 	]
 })
 export class MaterialModule { }

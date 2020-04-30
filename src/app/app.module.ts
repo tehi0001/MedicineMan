@@ -9,22 +9,30 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import {MaterialModule} from './material/material.module';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ServerService} from './services/server.service';
+import {UtilService} from './services/util.service';
+import {HttpClientModule} from '@angular/common/http';
+import {SessionService} from './services/session.service';
+import { LogoutComponent } from './logout/logout.component';
+import { MonitorComponent } from './monitor/monitor.component';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		LoginComponent,
-		DashboardComponent
+		DashboardComponent,
+		LogoutComponent,
+		MonitorComponent
 	],
 	imports: [
 		BrowserModule,
 		AppRoutingModule,
+		HttpClientModule,
 		BrowserAnimationsModule,
 		MaterialModule,
 		ReactiveFormsModule
 	],
 	providers: [
-		ServerService
+		ServerService, UtilService, SessionService
 	],
 	bootstrap: [AppComponent]
 })

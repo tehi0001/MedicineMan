@@ -16,12 +16,18 @@ export class ServerService {
 	}
 
 	getPatients(practitionerId: string): Observable<any> {
-		let url = Config.SERVER_URL + "/Encounter?participant.identifier=" + practitionerId + "&_include=Encounter.participant.individual&_include=Encounter.patient";
+		let url = Config.SERVER_URL + "/Encounter/?participant.identifier=" + practitionerId + "&_include=Encounter.participant.individual&_include=Encounter.patient";
+		return this.http.get(url, Config.HTTP_CONFIG);
+	}
+
+	getPatient(id: number): Observable<any> {
+		let url = Config.SERVER_URL + "/Patient/" + id + "/?_format=json";
 		return this.http.get(url, Config.HTTP_CONFIG);
 	}
 
 	getCholesterol(patientId: number): Observable<any> {
-		let url = Config.SERVER_URL + "/Observation?patient=" + patientId + "&code=2093-3&_sort=-date&_count=10";
+		let url = Config.SERVER_URL + "/Observation/?patient=" + patientId + "&code=2093-3&_sort=-date&_count=10";
 		return this.http.get(url, Config.HTTP_CONFIG);
 	}
+
 }

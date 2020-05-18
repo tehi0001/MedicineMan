@@ -1,62 +1,70 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {PatientModel} from '../models/interfaces';
 import {ServerService} from '../services/server.service';
 import {UtilService} from '../services/util.service';
 import {Observable} from 'rxjs';
+import {SessionService} from '../services/session.service';
 
 @Component({
   selector: 'app-monitor',
   templateUrl: './monitor.component.html',
   styleUrls: ['./monitor.component.scss']
 })
-export class MonitorComponent implements OnInit, OnChanges {
+export class MonitorComponent implements OnInit, OnDestroy {
 	tableDataSource: MatTableDataSource<PatientModel>;
 	displayedColumns: string[] = ['counter', 'name', 'cholesterol', 'effectiveDate', 'lastUpdate', 'action'];
-
-	@Input() patientToAdd: PatientModel;
 
 	@Output() remove: EventEmitter<PatientModel> = new EventEmitter();
 
 	isRunning: boolean = false;
-
 	isUpdating: boolean = false;
+	isInitializing: boolean = false;
+
+	showViewPatient: boolean = false;
+	patientIdToView: number;
 
 	constructor(
 		private server: ServerService,
-		private util: UtilService
+		private util: UtilService,
+		private session: SessionService
 	) { }
 
 	ngOnInit(): void {
 		this.tableDataSource = new MatTableDataSource<PatientModel>([]);
 	}
 
-	ngOnChanges(changes: SimpleChanges): void {
-		if(this.patientToAdd != null) {
-			this.isRunning = false;
-			this.isUpdating = false;
-
-			this.addPatient();
-
-			let index = this.tableDataSource.data.length - 1;
-
-			this.getCholesterolData(this.patientToAdd, index).subscribe(() => {
-				this.run();
-			}, () => {
-				this.removePatient(this.patientToAdd, index);
-				if(this.tableDataSource.data.length > 0) {
-					this.run();
-				}
-			})
+	addPatient(patient: PatientModel): boolean {
+		this.showViewPatient = false;
+		if(patient == null || this.isUpdating || this.isInitializing) {
+			this.util.notify("System is busy. Try again shortly.");
+			return false;
 		}
-	}
-	addPatient() {
-		this.tableDataSource.data.push(this.patientToAdd);
+
+		this.tableDataSource.data.push(patient);
 		this.tableDataSource._updateChangeSubscription();
+
+		let index = this.tableDataSource.data.length - 1;
+		this.isInitializing = true;
+		this.getCholesterolData(patient, index).subscribe(() => {
+			this.isInitializing = false;
+			if(!this.isRunning) {
+				this.run();
+			}
+		}, () => {
+			this.isInitializing = false;
+			this.removePatient(patient, index);
+		});
+
+		return true;
 	}
 	removePatient(patient: PatientModel, index: number) {
 		this.tableDataSource.data.splice(index, 1);
 		this.tableDataSource._updateChangeSubscription();
+
+		if(this.tableDataSource.data.length == 0) {
+			this.isRunning = false;
+		}
 		this.remove.emit(patient);
 	}
 
@@ -64,7 +72,7 @@ export class MonitorComponent implements OnInit, OnChanges {
 		return new Observable(observer => {
 			this.server.getCholesterol(patient.id).subscribe(response => {
 				if (response.entry == undefined) {
-					this.util.notify("Patient has no cholesterol observations");
+					this.util.notify("ERROR: No cholesterol observations for " + patient.name);
 					observer.error();
 				} else {
 					this.tableDataSource.data[index].cholesterol = response.entry[0].resource.valueQuantity.value;
@@ -72,10 +80,9 @@ export class MonitorComponent implements OnInit, OnChanges {
 					this.tableDataSource.data[index].effectiveDate = response.entry[0].resource.issued
 					this.tableDataSource.data[index].lastUpdate = (new Date()).toString();
 					this.tableDataSource.data[index].isMonitored = true;
+					this.tableDataSource.data[index].isLoading = false;
 					observer.next();
 				}
-				patient.isLoading = false;
-
 			});
 		})
 	}
@@ -89,10 +96,21 @@ export class MonitorComponent implements OnInit, OnChanges {
 					this.tableDataSource._updateChangeSubscription();
 					this.isUpdating = false;
 					setTimeout(() => {
-						this.run();
-					}, 5000);
+						if(this.isRunning) {
+							this.run();
+						}
+					}, this.session.updateInterval);
 				}
 			})
 		})
+	}
+
+	ngOnDestroy(): void {
+		this.isRunning = false;
+	}
+
+	viewPatient(patient: PatientModel) {
+		this.patientIdToView = patient.id;
+		this.showViewPatient = true;
 	}
 }

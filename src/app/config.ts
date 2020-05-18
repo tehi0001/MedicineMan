@@ -1,4 +1,5 @@
 import {HttpHeaders} from '@angular/common/http';
+import {SettingsModel} from './models/interfaces';
 
 export class Config {
 	static SERVER_URL = "https://fhir.monash.edu/hapi-fhir-jpaserver/fhir";
@@ -10,5 +11,10 @@ export class Config {
 		})
 	};
 
-	static SNACKBAR_TIMEOUT = 3000;
+	static SNACKBAR_TIMEOUT: number = 3000;
+
+	static DEFAULT_SETTINGS: SettingsModel = {
+		updateInterval: 5,
+		intervalUnit: 'seconds'
+	}
 }

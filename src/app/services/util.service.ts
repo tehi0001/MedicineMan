@@ -7,15 +7,21 @@ import {Config} from '../config';
 })
 export class UtilService {
 
-  constructor(private snackBar: MatSnackBar) { }
+	constructor(private snackBar: MatSnackBar) { }
 
-  notify(message: string) {
-  	this.snackBar.open(message, "OK", {
-  		duration: Config.SNACKBAR_TIMEOUT
-	})
-  }
+	notify(message: string) {
+		this.snackBar.open(message, "OK", {
+			duration: Config.SNACKBAR_TIMEOUT
+		})
+	}
 
-  serverErrorNotice() {
-  	this.notify("An unknown server error occurred");
-  }
+	serverErrorNotice(error?: any) {
+		console.log(error);
+		if(error != undefined && error.status == 0) {
+			this.notify("Server unreachable. Try again later");
+		}
+		else {
+			this.notify("An unknown server error occurred");
+		}
+	}
 }

@@ -11,6 +11,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTableModule} from '@angular/material/table';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatSelectModule} from '@angular/material/select';
+import {MatRadioModule} from '@angular/material/radio';
 
 
 @NgModule({
@@ -27,7 +30,10 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 		MatToolbarModule,
 		MatTableModule,
 		MatIconModule,
-		MatSlideToggleModule
+		MatSlideToggleModule,
+		MatSidenavModule,
+		MatSelectModule,
+		MatRadioModule
 	],
 	exports: [
 		MatCardModule,
@@ -40,7 +46,10 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 		MatToolbarModule,
 		MatTableModule,
 		MatIconModule,
-		MatSlideToggleModule
+		MatSlideToggleModule,
+		MatSidenavModule,
+		MatSelectModule,
+		MatRadioModule
 	]
 })
 export class MaterialModule { }

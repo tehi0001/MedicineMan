@@ -66,8 +66,7 @@ export class LoginComponent implements OnInit {
 				this.utilService.notify("Practitioner ID does not exist");
 			}
 			else {
-				this.utilService.serverErrorNotice();
-				console.log(error);
+				this.utilService.serverErrorNotice(error);
 			}
 			this.isBusy = false;
 		})

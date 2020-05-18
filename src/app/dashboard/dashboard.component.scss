@@ -1,3 +1,12 @@
+mat-drawer-container {
+	height: 100%;
+
+	mat-drawer {
+		width: 300px;
+		padding: 1.5em;
+	}
+}
+
 mat-toolbar {
 	align-items: center;
 	box-sizing: border-box;

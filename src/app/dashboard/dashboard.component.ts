@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {UtilService} from '../services/util.service';
 import {ServerService} from '../services/server.service';
 import {Router} from '@angular/router';
@@ -6,13 +6,14 @@ import {MatTableDataSource} from '@angular/material/table';
 import {SessionService} from '../services/session.service';
 import {PatientModel, UserModel} from '../models/interfaces';
 import {MonitorComponent} from '../monitor/monitor.component';
+import {MatDrawer} from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
 
 	practitioner: UserModel;
 
@@ -22,7 +23,10 @@ export class DashboardComponent implements OnInit {
 
 	displayedColumns = ['counter', 'name', 'action'];
 
-	patientToAdd: PatientModel = null;
+	@ViewChild(MonitorComponent) monitor: MonitorComponent;
+	@ViewChild(MatDrawer, {static: true}) draw: MatDrawer;
+
+	isViewInit: boolean = false;
 
 	constructor(
 		private utilService: UtilService,
@@ -30,6 +34,10 @@ export class DashboardComponent implements OnInit {
 		private session: SessionService,
 		private router: Router
 	) { }
+
+	ngAfterViewInit(): void {
+        this.isViewInit = true;
+    }
 
 	ngOnInit(): void {
 		this.practitioner = this.session.getCurrentUser;
@@ -63,9 +71,8 @@ export class DashboardComponent implements OnInit {
 
 			this.isLoading = false;
 
-			/*setTimeout(()=> {
-				this.updateCholesterolData();
-			}, 5000);*/
+		}, error => {
+			this.utilService.serverErrorNotice(error);
 		})
 	}
 
@@ -88,14 +95,16 @@ export class DashboardComponent implements OnInit {
 	monitorPatient(patient: PatientModel) {
 		this.tableDataSource.data[this.getPatientIndex(patient)].isMonitored = true;
 		this.tableDataSource.data[this.getPatientIndex(patient)].isLoading = true;
-		this.patientToAdd = this.tableDataSource.data[this.getPatientIndex(patient)];
 		this.tableDataSource._updateChangeSubscription();
+
+		if(!this.monitor.addPatient(this.tableDataSource.data[this.getPatientIndex(patient)])) {
+			this.unmonitorPatient(this.tableDataSource.data[this.getPatientIndex(patient)]);
+		}
 	}
 
 	unmonitorPatient(patient: PatientModel) {
 		this.tableDataSource.data[this.getPatientIndex(patient)].isMonitored = false;
 		this.tableDataSource._updateChangeSubscription();
-		this.patientToAdd = null;
 	}
 
 	getPatientIndex(patient: PatientModel): number {

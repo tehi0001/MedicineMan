@@ -14,6 +14,8 @@ import {HttpClientModule} from '@angular/common/http';
 import {SessionService} from './services/session.service';
 import { LogoutComponent } from './logout/logout.component';
 import { MonitorComponent } from './monitor/monitor.component';
+import { SettingsComponent } from './settings/settings.component';
+import { PatientComponent } from './patient/patient.component';
 
 @NgModule({
 	declarations: [
@@ -21,7 +23,9 @@ import { MonitorComponent } from './monitor/monitor.component';
 		LoginComponent,
 		DashboardComponent,
 		LogoutComponent,
-		MonitorComponent
+		MonitorComponent,
+		SettingsComponent,
+		PatientComponent
 	],
 	imports: [
 		BrowserModule,

@@ -4,7 +4,7 @@ import {UtilService} from '../services/util.service';
 import {ServerService} from '../services/server.service';
 import {Router} from '@angular/router';
 import {SessionService} from '../services/session.service';
-import {UserModel} from '../models/interfaces';
+import {Practitioner} from '../models/interfaces';
 
 @Component({
 	selector: 'app-login',
@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit {
 				localStorage.removeItem("rememberedId");
 			}
 
-			let user: UserModel = {
+			let user: Practitioner = {
 				id: response.id,
 				identifier: response.identifier[0].system + "|" + response.identifier[0].value,
 				name: response.name[0].prefix[0] + " " + response.name[0].given[0] + " " + response.name[0].family

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Config} from '../config';
+import {Patient} from '../models/interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -23,5 +24,14 @@ export class UtilService {
 		else {
 			this.notify("An unknown server error occurred");
 		}
+	}
+
+	getAverageCholesterol(patients: Patient[]): number {
+		let total: number = 0;
+		patients.forEach((patient) => {
+			total += patient.cholesterol;
+		});
+
+		return total / patients.length;
 	}
 }

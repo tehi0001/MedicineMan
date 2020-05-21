@@ -68,3 +68,16 @@ mat-card {
 .title {
 	font-size: 18px;
 }
+
+.text-warn {
+	color: #a4040a;
+}
+
+a {
+	color: #000;
+	font-weight: 500;
+	
+	.text-warn {
+		color: #a4040a;
+	}
+}

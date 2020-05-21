@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {SettingsModel, UserModel} from '../models/interfaces';
+import {SettingsModel, Practitioner} from '../models/interfaces';
 import {Router} from '@angular/router';
 import {Config} from '../config';
 
@@ -7,15 +7,15 @@ import {Config} from '../config';
   providedIn: 'root'
 })
 export class SessionService {
-	private currentUser: UserModel = null;
+	private currentUser: Practitioner = null;
 	constructor(private router: Router) { }
 
-	setCurrentUser(user: UserModel) {
+	setCurrentUser(user: Practitioner) {
 		this.currentUser = user;
 		sessionStorage.setItem("currentUser", JSON.stringify(this.currentUser));
 	}
 
-	get getCurrentUser(): UserModel {
+	get getCurrentUser(): Practitioner {
 		if(this.currentUser != null) {
 			return  this.currentUser;
 		}

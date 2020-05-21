@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
-import {PatientModel} from '../models/interfaces';
+import {Patient} from '../models/interfaces';
 import {ServerService} from '../services/server.service';
 import {UtilService} from '../services/util.service';
 import {Observable} from 'rxjs';
@@ -12,10 +12,10 @@ import {SessionService} from '../services/session.service';
   styleUrls: ['./monitor.component.scss']
 })
 export class MonitorComponent implements OnInit, OnDestroy {
-	tableDataSource: MatTableDataSource<PatientModel>;
+	tableDataSource: MatTableDataSource<Patient>;
 	displayedColumns: string[] = ['counter', 'name', 'cholesterol', 'effectiveDate', 'lastUpdate', 'action'];
 
-	@Output() remove: EventEmitter<PatientModel> = new EventEmitter();
+	@Output() remove: EventEmitter<Patient> = new EventEmitter();
 
 	isRunning: boolean = false;
 	isUpdating: boolean = false;
@@ -31,10 +31,10 @@ export class MonitorComponent implements OnInit, OnDestroy {
 	) { }
 
 	ngOnInit(): void {
-		this.tableDataSource = new MatTableDataSource<PatientModel>([]);
+		this.tableDataSource = new MatTableDataSource<Patient>([]);
 	}
 
-	addPatient(patient: PatientModel): boolean {
+	addPatient(patient: Patient): boolean {
 		this.showViewPatient = false;
 		if(patient == null || this.isUpdating || this.isInitializing) {
 			this.util.notify("System is busy. Try again shortly.");
@@ -58,7 +58,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
 
 		return true;
 	}
-	removePatient(patient: PatientModel, index: number) {
+	removePatient(patient: Patient, index: number) {
 		this.tableDataSource.data.splice(index, 1);
 		this.tableDataSource._updateChangeSubscription();
 
@@ -68,7 +68,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
 		this.remove.emit(patient);
 	}
 
-	getCholesterolData(patient: PatientModel, index: number): Observable<any> {
+	getCholesterolData(patient: Patient, index: number): Observable<any> {
 		return new Observable(observer => {
 			this.server.getCholesterol(patient.id).subscribe(response => {
 				if (response.entry == undefined) {
@@ -81,6 +81,11 @@ export class MonitorComponent implements OnInit, OnDestroy {
 					this.tableDataSource.data[index].lastUpdate = (new Date()).toString();
 					this.tableDataSource.data[index].isMonitored = true;
 					this.tableDataSource.data[index].isLoading = false;
+
+					if(this.tableDataSource.data[index].cholesterol > this.util.getAverageCholesterol(this.tableDataSource.data)) {
+						this.tableDataSource.data[index].cholesterolLevel = 'high';
+					}
+
 					observer.next();
 				}
 			});
@@ -109,7 +114,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
 		this.isRunning = false;
 	}
 
-	viewPatient(patient: PatientModel) {
+	viewPatient(patient: Patient) {
 		this.patientIdToView = patient.id;
 		this.showViewPatient = true;
 	}

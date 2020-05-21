@@ -4,7 +4,7 @@ import {ServerService} from '../services/server.service';
 import {Router} from '@angular/router';
 import {MatTableDataSource} from '@angular/material/table';
 import {SessionService} from '../services/session.service';
-import {PatientModel, UserModel} from '../models/interfaces';
+import {Patient, Practitioner} from '../models/interfaces';
 import {MonitorComponent} from '../monitor/monitor.component';
 import {MatDrawer} from '@angular/material/sidenav';
 
@@ -15,11 +15,11 @@ import {MatDrawer} from '@angular/material/sidenav';
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
 
-	practitioner: UserModel;
+	practitioner: Practitioner;
 
 	isLoading: boolean = false;
 
-	tableDataSource: MatTableDataSource<PatientModel>;
+	tableDataSource: MatTableDataSource<Patient>;
 
 	displayedColumns = ['counter', 'name', 'action'];
 
@@ -53,11 +53,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	loadPatients() {
 		this.isLoading = true;
 		this.server.getPatients(this.practitioner.identifier).subscribe(response => {
-			let patients: PatientModel[] = []; // To hold all returned patients including duplicates
+			let patients: Patient[] = []; // To hold all returned patients including duplicates
 			response.entry.forEach(entry => {
 				let id = entry.resource.subject.reference.replace("Patient/", "");
 				let name = entry.resource.subject.display;
-				let patient: PatientModel = {
+				let patient: Patient = {
 					id: id,
 					name: name,
 					isLoading: true
@@ -67,7 +67,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 			});
 
 			//Remove duplicates and populate table
-			this.tableDataSource = new MatTableDataSource<PatientModel>(this.getUniquePatientsFromEncounters(patients))
+			this.tableDataSource = new MatTableDataSource<Patient>(this.getUniquePatientsFromEncounters(patients))
 
 			this.isLoading = false;
 
@@ -76,14 +76,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		})
 	}
 
-	getUniquePatientsFromEncounters(patients: PatientModel[]): PatientModel[] {
+	getUniquePatientsFromEncounters(patients: Patient[]): Patient[] {
 		let uniquePatientsSet: Set<string> = new Set<string>();
 
 		patients.forEach(patient => {
 			uniquePatientsSet.add(JSON.stringify(patient));
 		});
 
-		let uniquePatientsArray: PatientModel[] = [];
+		let uniquePatientsArray: Patient[] = [];
 
 		uniquePatientsSet.forEach(patient => {
 			uniquePatientsArray.push(JSON.parse(patient));
@@ -92,7 +92,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		return  uniquePatientsArray;
 	}
 
-	monitorPatient(patient: PatientModel) {
+	monitorPatient(patient: Patient) {
 		this.tableDataSource.data[this.getPatientIndex(patient)].isMonitored = true;
 		this.tableDataSource.data[this.getPatientIndex(patient)].isLoading = true;
 		this.tableDataSource._updateChangeSubscription();
@@ -102,12 +102,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		}
 	}
 
-	unmonitorPatient(patient: PatientModel) {
+	unmonitorPatient(patient: Patient) {
 		this.tableDataSource.data[this.getPatientIndex(patient)].isMonitored = false;
 		this.tableDataSource._updateChangeSubscription();
 	}
 
-	getPatientIndex(patient: PatientModel): number {
+	getPatientIndex(patient: Patient): number {
 		for(let i = 0; i < this.tableDataSource.data.length; i++) {
 			if(this.tableDataSource.data[i].id == patient.id) {
 				return i;
